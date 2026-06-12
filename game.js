@@ -346,6 +346,8 @@ function buyProducer(p) {
   state.spores -= cs;
   state.biomass -= cb;
   state.producers[p.id].count += amount;
+  sfx("buy");
+  flashProducer(p.id);
   renderAll();
 }
 
@@ -358,6 +360,7 @@ function buyUpgrade(u) {
   state.spores -= cs;
   state.biomass -= cb;
   state.upgrades[u.id].level += 1;
+  sfx("upgrade");
   log(`adaptation acquired :: ${u.name} [lvl ${state.upgrades[u.id].level}]`);
   renderAll();
 }
@@ -390,6 +393,9 @@ function doFruit() {
   state.totalSpores = 0;
   state.totalBiomass = 0;
 
+  sfx("fruit");
+  fireFruitFlash();
+  bump("r-mycosin");
   log(`◆ FRUITING EVENT — ${tierName}. colony released ${fmt(gain)} mycosin into the substrate.`);
   log(`◆ network collapsed to spores. permanent yield now ×${mycosinMultiplier().toFixed(2)}.`);
   buildViz(true);
@@ -421,6 +427,7 @@ function checkUnlocks() {
       state.unlockedProducers[p.id] = true;
       if (p.id !== "thread") {
         log(`new structure viable :: ${p.name}`, "unlock_" + p.id);
+        sfx("unlockChime");
       }
     }
   }
@@ -430,6 +437,48 @@ function isProducerVisible(p) {
 }
 function isUpgradeVisible(u) {
   return !u.unlock || u.unlock(state);
+}
+
+/* ============================================================
+   UI FEEDBACK HELPERS (animation / audio glue)
+   ============================================================ */
+function sfx(method, arg) {
+  // audio.js is optional; never let a missing engine break the game
+  if (window.Sound && typeof Sound[method] === "function") Sound[method](arg);
+}
+
+function bump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove("bump");
+  void el.offsetWidth; // force reflow so the animation restarts
+  el.classList.add("bump");
+}
+
+function flashProducer(id) {
+  const el = producerEls[id];
+  if (!el) return;
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
+}
+
+function floatGain(text) {
+  const btn = document.getElementById("digest-btn");
+  if (!btn) return;
+  const f = document.createElement("div");
+  f.className = "float-gain";
+  f.textContent = text;
+  btn.appendChild(f);
+  setTimeout(() => f.remove(), 950);
+}
+
+function fireFruitFlash() {
+  const el = document.getElementById("fruit-flash");
+  if (!el) return;
+  el.classList.remove("fire");
+  void el.offsetWidth;
+  el.classList.add("fire");
 }
 
 /* ============================================================
@@ -899,6 +948,43 @@ function injectBuyModeControls() {
   center.querySelector(".panel-title").after(bar);
 }
 
+function initAudioControls() {
+  const sfxBtn = document.getElementById("sfx-toggle");
+  const musicBtn = document.getElementById("music-toggle");
+  const vol = document.getElementById("vol-slider");
+  if (!sfxBtn || !musicBtn || !vol || !window.Sound) return;
+
+  const reflectSfx = (on) => {
+    sfxBtn.classList.toggle("on", on);
+    sfxBtn.setAttribute("aria-pressed", String(on));
+    sfxBtn.textContent = "sfx " + (on ? "◼" : "◻");
+  };
+  const reflectMusic = (on) => {
+    musicBtn.classList.toggle("on", on);
+    musicBtn.setAttribute("aria-pressed", String(on));
+    musicBtn.textContent = "lo-fi " + (on ? "◼" : "◻");
+  };
+
+  const st = Sound.getState();
+  reflectSfx(st.sfx);
+  reflectMusic(st.music);
+  vol.value = Math.round(st.vol * 100);
+
+  sfxBtn.onclick = () => reflectSfx(Sound.toggleSfx());
+  musicBtn.onclick = () => reflectMusic(Sound.toggleMusic());
+  vol.oninput = () => Sound.setVolume(vol.value / 100);
+
+  // Browser autoplay policy: audio can only begin from a user gesture.
+  // Start whatever the player had enabled on their first interaction.
+  const prime = () => {
+    Sound.primeFromGesture();
+    window.removeEventListener("pointerdown", prime);
+    window.removeEventListener("keydown", prime);
+  };
+  window.addEventListener("pointerdown", prime);
+  window.addEventListener("keydown", prime);
+}
+
 function init() {
   state = freshState();
   const loaded = load();
@@ -926,10 +1012,16 @@ function init() {
     state.totalBiomass += y.biomass;
     state.lifetimeSpores += y.spores;
     renderResources();
+    sfx("digest");
+    floatGain(`+${fmt(y.spores)} spore${y.spores >= 2 ? "s" : ""}`);
+    bump("r-spores");
+    if (y.biomass > 0) bump("r-biomass");
   };
   document.getElementById("fruit-btn").onclick = doFruit;
-  document.getElementById("save-btn").onclick = () => { save(); log("state archived to local substrate."); };
+  document.getElementById("save-btn").onclick = () => { sfx("click"); save(); log("state archived to local substrate."); };
   document.getElementById("wipe-btn").onclick = wipe;
+
+  initAudioControls();
 
   window.addEventListener("resize", buildBackground);
   window.addEventListener("beforeunload", save);

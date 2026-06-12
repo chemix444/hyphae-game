@@ -42,6 +42,25 @@ proportional to the total spores reached. Three tiers (Primordium →
 Sporocarp → Sporulation) with rising thresholds and richer yields. The early
 game creeps; after the first fruiting it accelerates sharply.
 
+## Sound & feel
+
+The interface reacts. Buying a structure flashes its card, manual digestion
+spits a floating `+spores` tag and bumps the counter, affordable items breathe,
+and a Fruiting Event washes the screen in amber.
+
+All audio is **synthesized live with the Web Audio API** — no asset files, no
+network. The *acoustics* panel (lower left) toggles:
+
+- **sfx** — procedural blips for digesting, buying, unlocking, and a big
+  shimmering swell on Fruiting.
+- **lo-fi** — a generative soundtrack: warm Am7–Fmaj7–Cmaj7–G7 pads, soft
+  bass, a drifting pentatonic melody with tape echo, brushed drums, and vinyl
+  crackle. Off by default; it never loops a sample, it improvises.
+
+A master volume slider sits beneath them. Audio preferences persist separately
+from the game save, and (per browser autoplay rules) the soundtrack starts on
+your first click. Everything honors `prefers-reduced-motion`.
+
 ## Saving
 
 Progress autosaves to `localStorage` every 20s and on exit. Closing the tab
@@ -51,5 +70,6 @@ everything, including permanent mycosin.
 ## Files
 
 - `index.html` — layout
-- `style.css` — dark biological theme + CSS animations (pulsing/creeping mycelium)
+- `style.css` — dark biological theme + CSS animations (pulsing/creeping mycelium, UI micro-interactions, responsive layout)
 - `game.js` — engine: resources, producers, upgrades, prestige, save/load, SVG visualization
+- `audio.js` — Web Audio engine: procedural sound effects + generative lo-fi soundtrack
