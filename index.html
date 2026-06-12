@@ -63,6 +63,18 @@
       <button id="save-btn" class="meta-btn">archive state</button>
       <button id="wipe-btn" class="meta-btn danger">sterilize (wipe)</button>
     </div>
+
+    <div id="audio-controls">
+      <div class="audio-title">// acoustics</div>
+      <div class="audio-row">
+        <button id="sfx-toggle" class="audio-btn" aria-pressed="true" title="toggle sound effects">sfx ◼</button>
+        <button id="music-toggle" class="audio-btn" aria-pressed="false" title="toggle lo-fi soundtrack">lo-fi ◻</button>
+      </div>
+      <div class="audio-row vol">
+        <span class="vol-icon">vol</span>
+        <input id="vol-slider" type="range" min="0" max="100" value="60" aria-label="master volume">
+      </div>
+    </div>
   </aside>
 
   <section id="center-panel" class="panel">
@@ -91,6 +103,9 @@
   </button>
 </footer>
 
+<div id="fruit-flash" aria-hidden="true"></div>
+
+<script src="audio.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
