@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYPHAE — substrate colonization interface</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg id="bg-mycelium" aria-hidden="true"></svg>
+
+<main id="layout">
+
+  <aside id="left-panel" class="panel">
+    <header id="title">
+      <h1>HYPHAE</h1>
+      <div class="subtitle">substrate colonization interface v0.3</div>
+    </header>
+
+    <div id="resources">
+      <div class="res-row">
+        <span class="res-label">spores</span>
+        <span class="res-value" id="r-spores">0</span>
+      </div>
+      <div class="res-row sub">
+        <span class="res-label">flux</span>
+        <span class="res-value" id="r-sps">0/s</span>
+      </div>
+      <div class="res-row">
+        <span class="res-label">biomass</span>
+        <span class="res-value" id="r-biomass">0</span>
+      </div>
+      <div class="res-row sub">
+        <span class="res-label">flux</span>
+        <span class="res-value" id="r-bps">0/s</span>
+      </div>
+      <div class="res-row mycosin">
+        <span class="res-label">mycosin</span>
+        <span class="res-value" id="r-mycosin">0</span>
+      </div>
+      <div class="res-row sub mycosin">
+        <span class="res-label">permanent yield</span>
+        <span class="res-value" id="r-mycomult">×1.0</span>
+      </div>
+    </div>
+
+    <button id="digest-btn" title="Manual decomposition. Yields trace spores and biomass.">
+      DIGEST ORGANIC DEBRIS
+      <span class="digest-sub" id="digest-yield">+1 spore · +0.5 biomass</span>
+    </button>
+
+    <div id="viz-wrap">
+      <svg id="viz" viewBox="0 0 260 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="viz-caption">network extent — live imaging</div>
+    </div>
+
+    <div id="log">
+      <div class="log-title">// field log</div>
+      <div id="log-lines"></div>
+    </div>
+
+    <div id="meta-controls">
+      <button id="save-btn" class="meta-btn">archive state</button>
+      <button id="wipe-btn" class="meta-btn danger">sterilize (wipe)</button>
+    </div>
+  </aside>
+
+  <section id="center-panel" class="panel">
+    <div class="panel-title">// growth structures</div>
+    <div id="producer-list"></div>
+  </section>
+
+  <aside id="right-panel" class="panel">
+    <div class="panel-title">// adaptations <span class="panel-note">sorted by cost</span></div>
+    <div id="upgrade-list"></div>
+  </aside>
+
+</main>
+
+<footer id="bottom-bar">
+  <div id="fruit-info">
+    <div class="fruit-label" id="fruit-tier-label">FRUITING — sporocarp development</div>
+    <div id="fruit-meter">
+      <div id="fruit-fill"></div>
+      <div id="fruit-meter-text">0%</div>
+    </div>
+  </div>
+  <button id="fruit-btn" disabled>
+    <span id="fruit-btn-main">FRUIT</span>
+    <span id="fruit-btn-sub">threshold not met</span>
+  </button>
+</footer>
+
+<script src="game.js"></script>
+</body>
+</html>
